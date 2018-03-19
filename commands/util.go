@@ -23,6 +23,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/spf13/cobra"
+
 	"github.com/apache/incubator-openwhisk-cli/wski18n"
 	"github.com/apache/incubator-openwhisk-client-go/whisk"
 
@@ -1109,4 +1111,25 @@ func isApplicationError(err error) bool {
 	}
 
 	return applicationError
+}
+
+// CheckSubCommand checks the arg after to this command is an existed subcommand.
+func CheckSubCommand(cmd *cobra.Command, arg []string) error {
+	if len(arg) > 0 {
+		for _, child := range cmd.Commands() {
+			// Since flags are filtered from cobra, directly match next command is safe.
+			if child.Name() == arg[0] {
+				return nil
+			}
+		}
+		whisk.Debug(whisk.DbgError, "not an existed subcommand under %s\n", cmd.Name())
+		errStr := wski18n.T("not an existed subcommand.")
+		werr := whisk.MakeWskError(errors.New(errStr), whisk.EXIT_CODE_ERR_GENERAL, whisk.NO_DISPLAY_MSG, whisk.DISPLAY_USAGE)
+		return werr
+	}
+
+	// FIXME: Used this for propagate back, should find a more elegant way.
+	correctStr := wski18n.T("")
+	werr := whisk.MakeWskError(errors.New(correctStr), 0, whisk.NO_DISPLAY_MSG, whisk.DISPLAY_USAGE, whisk.NO_MSG_DISPLAYED, whisk.NO_DISPLAY_PREFIX)
+	return werr
 }

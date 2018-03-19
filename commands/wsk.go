@@ -27,7 +27,6 @@ var WskCmd = &cobra.Command{
 	Use:               "wsk",
 	Short:             wski18n.T("OpenWhisk cloud computing command line interface."),
 	Long:              logoText(),
-	SilenceUsage:      true,
 	PersistentPreRunE: parseConfigFlags,
 }
 

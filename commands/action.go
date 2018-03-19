@@ -63,6 +63,9 @@ const (
 var actionCmd = &cobra.Command{
 	Use:   "action",
 	Short: wski18n.T("work with actions"),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return CheckSubCommand(cmd, args)
+	},
 }
 
 var actionCreateCmd = &cobra.Command{
